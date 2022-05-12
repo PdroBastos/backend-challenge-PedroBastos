@@ -2,6 +2,10 @@
 const {
   Model
 } = require('sequelize');
+
+// const Users = require('./Users');
+
+
 module.exports = (sequelize, DataTypes) => {
   class Posts extends Model {
     /**
@@ -10,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
     }
   }
   Posts.init(
@@ -20,23 +23,24 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       subtitle: {
-        type: DataTypes.STRING(30),
+        type: DataTypes.STRING(50),
         allowNull: false,
       },
-    
       text: {
         type: DataTypes.TEXT(255),
-        allowNull: false
+        allowNull: false,
       },
-      userid: {
-          
-      },
-    
+      // userId: {
+      //   type: DataTypes.INTENGER,
+      //   allowNull: false,
+      // },
     },
     {
       sequelize,
       modelName: "Posts",
     }
-  );
-  return Posts;
+    
+  
+);
+return Posts;
 };

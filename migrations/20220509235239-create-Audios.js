@@ -4,32 +4,42 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     return queryInterface.createTable("Audios", {
       id: {
-        type: Sequelize.DataTypes.INTEGER,
+        type: Sequelize.DataTypes.INTEGER(),
+        autoIncrement: true,
+        allowNull: false,
         primaryKey: true,
-        autoIncrement: console.log(uuid())
       },
       URL: {
         type: Sequelize.DataTypes.STRING(150),
         allowNull: false,
-        URL: "http://api.voicerss.org/?audio",
+        // URL:
       },
-      postid: {
-
+      postId: {
+        type: Sequelize.DataTypes.INTEGER(),
+        allowNull: false,
+        references: {
+          model: {
+            tableName: "Posts",
+          },
+          key: "id",
+        }
       },
-      userid: {
-
+      userId: {
+        type: Sequelize.DataTypes.INTEGER(),
+        allowNull: false,
+        references: {
+          model: {
+            tableName: "Users",
+          },
+          key: "id",
+        }
       },
       updatedAt: Sequelize.DataTypes.DATE,
       createdAt: Sequelize.DataTypes.DATE,
-    });
+    });  
   },
 
   async down (queryInterface, Sequelize) {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
+    await queryInterface.dropTable('Audios');
   }
 };

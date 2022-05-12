@@ -10,14 +10,19 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Users.belongsTo(models.Posts);
+      models.Posts.hasMany(Users);
     }
   }
   Users.init(
     {
       name: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.STRING(30),
+        unique: true,
         allowNull: false,
+        validate: {
+        notEmpty: true
+        }
       },
       email: {
         type: DataTypes.STRING(50),
@@ -26,11 +31,16 @@ module.exports = (sequelize, DataTypes) => {
       },
     
       psw: {
-        type: DataTypes.STRING(500),
+        type: DataTypes.STRING(30),
         allowNull: false,
+        validate: {
+            notEmpty: true,
+            len: [3, 42]
+        }
       },
       isadmin: {
         type: DataTypes.BOOLEAN(),
+        
       },
     
     },
