@@ -11,6 +11,7 @@ module.exports = {
       URL: {
         type: Sequelize.DataTypes.STRING(150),
         allowNull: false,
+        URL: "http://api.voicerss.org/?audio",
       },
       postid: {
 

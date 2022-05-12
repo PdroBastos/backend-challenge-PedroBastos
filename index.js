@@ -61,10 +61,10 @@ app.get('/users', async (req, res) => {
   // res.send(users.rows);
 
 
-  app.put("/text/:id", (req, res) => {
+  app.put("/text/:id", async (req, res) => {
     try {
       const idText = req.params.id
-      const Posts = await Posts.findOne({ where: { id: Users} });
+      const Posts = await Posts.findOne({ where: { id: uuid} });
       
       res.status(201).send(Posts);
 
@@ -75,7 +75,7 @@ app.get('/users', async (req, res) => {
   });
 
 
-  app.post("/text", (req, res) => {
+  app.post("/text", async (req, res) => {
     try {
       const textBody = req.body;
       const text = await Posts.create({
@@ -108,7 +108,7 @@ app.get('/text/:id', async (req, res) => {
 
 app.get('/user/:id/text', async (req, res) => {
   const idDoUsuario = req.params.uuid;
-  // const user = await Users.findOne({ where: { id: idDoUsuario } });
+  const user = await Users.findOne({ where: { id: idDoUsuario } });
   const idText = req.params.uuid
   const Posts = await Posts.findOne({ where: { id: idText } });
   res.send(Posts);
@@ -128,17 +128,50 @@ app.delete('/text/:id/', async (req, res) => {
   }
 });
 
+app.post("/text/:id/audio", async (req, res) => {
+    try {
+      const textAudio = req.body;
+      const audio = await Audios.create({
+        URL: textAudio.URL,        
+      
+      });
 
 
+      res.status(201).send(audio);
+
+  } catch (error) {
+    console.log('error', error);
+      res.status(404).send('Not Found');
+  }
+});
 
 
+app.get('/text/:id.audio', async (req, res) => {
+  try {
+    const textAudio = req.params.uuid
+    const Audios = await Audios.findOne({ where: { id: textAudio } });
+    
+    res.status(201).send(Audios);
+
+  } catch (error) {
+    console.log('error', error);
+    res.status(204).send('No Content');
+  }
+});
 
 
+app.put('/text/:id.audio', async (req, res) => {
+  try {
+    const textAudio = req.params.uuid
+    const Audios = await Audios.findOne({ where: { id: textAudio } });
+    
+    res.status(201).send(Audios);
 
-
-
-
-
+  } catch (error) {
+    console.log('error', error);
+    res.status(204).send('No Content');
+  }
+});
 
 
 
