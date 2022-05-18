@@ -1,22 +1,15 @@
 const express = require('express');
-
-// const sequelize = new Sequelize('postgres', 'postgres', '123', {
-//   host: 'localhost',
-//   dialect: 'postgres'
-// });
+const Sequelize = require('sequelize');
+const config = require('../backend-challenge-PedroBastos/config/config.json');
 
 const app = express();
-
-
 const db = require('./db');
 
+const { uuid } = require('uuidv4');
 const { Users } = require('./models');
 const { Posts } = require('./models');
 const { Audios} = require('./models');
 
-// console.log('Users =>>>', Users);
-// console.log('Posts =>>>', Posts);
-// console.log('Audios =>>>', Audios);
 
 app.use(express.json());
 
@@ -62,17 +55,17 @@ app.get('/users/', async (req, res) => {
 app.put('/user/:id/', async (req, res) => {
   try {
       const idUser = req.params.id;
-      const { newUser } = req.body;
-      const { newEmail } = req.body;
-      const { newPsw } = req.body;
-      const user = await Users.update({user:newUser},{where:idUser});
-      const email = await Users.update({email:newEmail},{where:idUser});
-      const psw = await Users.update({email:newPsw},{where:idUser});
+      const { newName } = req.body.idUser;
+      // const { newEmail } = req.body;
+      // const { newPsw } = req.body;
+      const user = await Users.update({user:newName},{where:idUser});
+      // const email = await Users.update({email:newEmail},{where:idUser});
+      // const psw = await Users.update({email:newPsw},{where:idUser});
 
     
     res.status(201).send(user);
-    res.status(201).send(email);
-    res.status(201).send(psw);
+    // res.status(201).send(email);
+    // res.status(201).send(psw);
 
   } catch (error) {
     console.log('error', error);
@@ -120,19 +113,6 @@ app.put('/user/:id/', async (req, res) => {
   });
 
 
-// app.get('/text/:id', async (req, res) => {
-//   try {
-//     const idText = req.params
-//     const text = await Posts.findOne({ where: { id: idText } });
-    
-//     res.status(201).send(text);
-
-//   } catch (error) {
-//     console.log('error', error);
-//     res.status(204).send('No Content');
-//   }
-// });
-
 app.get('/user/:id/text', async (req, res) => {
 try {
   const idDoUsuario = req.params;;
@@ -159,6 +139,7 @@ app.delete('/text/:id/', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
 
 app.post('/text/:id/audio', async (req, res) => {
     try {
@@ -206,12 +187,11 @@ app.put('/text/:id.audio', async (req, res) => {
 });
 
 
-
-
-
 if (process.env.NODE_ENV !== 'test' ) {
   app.listen(2000, () => {
       console.log("meu servidor esta rodando");
   })
 }
+
+
 module.exports = app;

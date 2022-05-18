@@ -1,40 +1,34 @@
 'use strict';
-const { DataTypes } = require("sequelize/types");
-
 
 module.exports = {
   async up (queryInterface, Sequelize) {
     return queryInterface.createTable("Users", {
       id: {
-        type: Sequelize.DataTypes.INTEGER(),
-        autoIncrement: true,
+        type: Sequelize.DataTypes.INTEGER,
+        primaryKey: true,
         allowNull: false,
-        primaryKey: true
+        autoIncrement: true
       },
       name: {
-        type: Sequelize.DataTypes.STRING(50),
+        type: Sequelize.DataTypes.STRING,
         unique: true,
         allowNull: false,
       },
       email: {
-        type: Sequelize.DataTypes.STRING(50),
+        type: Sequelize.DataTypes.STRING,
         allowNull: false,
         unique: true,
       },
       psw: {
-        type: Sequelize.DataTypes.STRING(30),
+        type: Sequelize.DataTypes.STRING,
         allowNull: false,
-        validate: {
-            notEmpty: true,
-            len: [7, 42]
-        }
       },
       isadmin: {
-        type: Sequelize.DataTypes.BOOLEAN(),
+        type: Sequelize.DataTypes.BOOLEAN,
       },
-      postId:{
-        type: Sequelize.INTENGER
-      },
+      // postId:{
+      //   type: Sequelize.DataTypes.INTEGER,
+      // },
 
       updatedAt: Sequelize.DataTypes.DATE,
       createdAt: Sequelize.DataTypes.DATE,

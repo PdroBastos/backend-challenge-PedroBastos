@@ -1,10 +1,8 @@
 'use strict';
-const {
-  Model
+
+const { 
+  Model 
 } = require('sequelize');
-
-// const Users = require('./Users');
-
 
 module.exports = (sequelize, DataTypes) => {
   class Posts extends Model {
@@ -14,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+
     }
   }
   Posts.init(
@@ -30,10 +29,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT(255),
         allowNull: false,
       },
-      // userId: {
-      //   type: DataTypes.INTENGER,
-      //   allowNull: false,
-      // },
     },
     {
       sequelize,

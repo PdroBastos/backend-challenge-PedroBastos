@@ -1,18 +1,24 @@
 'use strict';
-const {
-  Model
+
+const { 
+Model 
 } = require('sequelize');
+
+// const Posts = require('./posts');
+
+
 module.exports = (sequelize, DataTypes) => {
   class Users extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+
+
     static associate(models) {
-      Users.belongsTo(models.Posts);
-      models.Posts.hasMany(Users);
+      // Users.belongsTo(Posts, {
+      //   constraint: true,
+      //   foreignKey: 'userId'
+      // });
     }
+
+
   }
   Users.init(
     {
@@ -29,18 +35,17 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: true,
       },
-    
+      
       psw: {
         type: DataTypes.STRING(30),
         allowNull: false,
         validate: {
             notEmpty: true,
-            len: [3, 42]
-        }
+            len: [3, 47]
+          }
       },
       isadmin: {
-        type: DataTypes.BOOLEAN(),
-        
+        type: DataTypes.BOOLEAN,
       },
     
     },
