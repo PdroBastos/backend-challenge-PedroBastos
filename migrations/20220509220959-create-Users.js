@@ -26,10 +26,7 @@ module.exports = {
       isadmin: {
         type: Sequelize.DataTypes.BOOLEAN,
       },
-      // postId:{
-      //   type: Sequelize.DataTypes.INTEGER,
-      // },
-
+      
       updatedAt: Sequelize.DataTypes.DATE,
       createdAt: Sequelize.DataTypes.DATE,
       

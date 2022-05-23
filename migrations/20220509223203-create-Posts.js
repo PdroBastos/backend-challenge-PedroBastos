@@ -18,8 +18,15 @@ module.exports = {
         allowNull: false,
       },
       text: {
-        type: Sequelize.DataTypes.TEXT(255),
+        type: Sequelize.DataTypes.STRING(255),
         allowNull: false,
+      },
+      userId: {
+        type: Sequelize.DataTypes.INTEGER,
+        references: {         
+          model: 'Users',
+          key: 'id'
+        }
       },
       
       updatedAt: Sequelize.DataTypes.DATE,

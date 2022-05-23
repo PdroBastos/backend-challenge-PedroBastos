@@ -3,7 +3,7 @@ const app = require('../index');
 const { faker } = require('@faker-js/faker');
 
 
-describe('teste das rotas de aula',() => {
+describe('test of users routes',() => {
     test('should successfully create new user', async() => {
         const newUser = {
             nome: faker.lorem.words(2),

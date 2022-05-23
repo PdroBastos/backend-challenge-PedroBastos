@@ -3,15 +3,15 @@
 const {
   Model
 } = require('sequelize');
+
+const users = require('./users');
+const posts = require('./posts')
+
 module.exports = (sequelize, DataTypes) => {
   class Audios extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+   
     static associate(models) {
-    //   users.belongsToMany(Posts, { through: Audios });
+      // Users.belongsToMany(models.Posts, { through: Audios });
     }
   }
   Audios.init(

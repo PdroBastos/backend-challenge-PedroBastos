@@ -1,20 +1,19 @@
 const express = require('express');
-const Sequelize = require('sequelize');
-const config = require('../backend-challenge-PedroBastos/config/config.json');
-
 const app = express();
 const db = require('./db');
 
-const { uuid } = require('uuidv4');
+
 const { Users } = require('./models');
 const { Posts } = require('./models');
 const { Audios} = require('./models');
+const posts = require('./models/posts');
+
 
 
 app.use(express.json());
 
 
-//Funções de Usuário.
+// Funções de Usuário. //
 
 app.post('/user/', async (req, res) => {
   try {
@@ -54,18 +53,14 @@ app.get('/users/', async (req, res) => {
 
 app.put('/user/:id/', async (req, res) => {
   try {
-      const idUser = req.params.id;
-      const { newName } = req.body.idUser;
-      // const { newEmail } = req.body;
-      // const { newPsw } = req.body;
-      const user = await Users.update({user:newName},{where:idUser});
-      // const email = await Users.update({email:newEmail},{where:idUser});
-      // const psw = await Users.update({email:newPsw},{where:idUser});
+      const name = req.body.name;
+      const email = req.body.email;
+      const psw = req.body.psw;
+      const id  = req.params.id;
 
+      const user = await Users.update({ name, email, psw }, { where: { id }});
     
     res.status(201).send(user);
-    // res.status(201).send(email);
-    // res.status(201).send(psw);
 
   } catch (error) {
     console.log('error', error);
@@ -79,13 +74,13 @@ app.put('/user/:id/', async (req, res) => {
   app.post('/text/', async (req, res) => {
     try {
       const textBody = req.body;
-      // const userId = req.params.id
+      const userId = req.body.userId;
+    
       const text = await Posts.create({
         title: textBody.title,
         subtitle: textBody.subtitle,
         text: textBody.text,
-        // id: userId
-        
+        userId: userId
       });
 
       res.status(201).send(text);
@@ -99,13 +94,32 @@ app.put('/user/:id/', async (req, res) => {
 
   app.put("/text/:id", async (req, res) => {
     try {
-      const idText = req.params.id;
-      const { newText } = req.body;
-      const text = await Posts.update({text:newText},{where:idText});
+      const title = req.body.title;
+      const subtitle = req.body.subtitle;
+      const newText = req.body.newText;
+      const id = req.params.id;
+
+      const text = await Posts.update({ title, subtitle, text: newText, },{ where: { id }});
+
+      const textIndex = text.findIndex(Posts => text.id == id);
+      Posts[textIndex] = text;
+
 
       
       res.status(201).send(text);
 
+    } catch (error) {
+      console.log('error', error);
+      res.status(204).send('Alteração não foi feita');
+    }
+  });
+
+  app.get('text/:id/' , async (req, res) => {
+    try {
+
+
+      res.send();
+    
     } catch (error) {
       console.log('error', error);
       res.status(204).send('No Content');
@@ -113,12 +127,10 @@ app.put('/user/:id/', async (req, res) => {
   });
 
 
-app.get('/user/:id/text', async (req, res) => {
+app.get('/user/:id/texts', async (req, res) => {
 try {
-  const idDoUsuario = req.params;;
-  const text = await Posts.findOne({ where: { id: idDoUsuario } });
-  
-  res.send(text);
+ 
+  res.send(user);
 
 } catch (error) {
   console.log('error', error);
@@ -129,14 +141,14 @@ try {
 
 app.delete('/text/:id/', async (req, res) => {
   try{
-    const idText = req.params;
-    const text = await Posts.findOne({ where: { id: idText } });
 
-    res.status(204).send(text);
+    const deleteText = posts.deleteOne({id: req.params.id });
+
+    res.status(204).send(deleteText);
 
   } catch (error) {
     console.log('error', error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).send('Não deletado');
   }
 });
 

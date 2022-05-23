@@ -4,36 +4,34 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     return queryInterface.createTable("Audios", {
       id: {
-        type: Sequelize.DataTypes.INTEGER,
+        type: Sequelize.INTEGER,
         primaryKey: true,
         allowNull: false,
-        autoIncrement: true
+        autoIncrement: true,
       },
       URL: {
         type: Sequelize.DataTypes.STRING(150),
         allowNull: false,
         // URL:
       },
-      // postId: {
-      //   type: Sequelize.DataTypes.INTEGER(),
-      //   allowNull: false,
-      //   references: {
-      //     model: {
-      //       tableName: "Posts",
-      //     },
-      //     key: "id",
-      //   }
-      // },
-      // userId: {
-      //   type: Sequelize.DataTypes.INTEGER(),
-      //   allowNull: false,
-      //   references: {
-      //     model: {
-      //       tableName: "Users",
-      //     },
-      //     key: "id",
-      //   }
-      // },
+      userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {         // User hasMany Posts n:n
+          model: 'Users',
+          key: 'id'
+        }
+      },
+      postId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {         // Posts hasMany Users n:n
+          model: 'Posts',
+          key: 'id'
+        }
+      },
+
+
       updatedAt: Sequelize.DataTypes.DATE,
       createdAt: Sequelize.DataTypes.DATE,
     });  
