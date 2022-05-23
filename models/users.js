@@ -4,7 +4,6 @@ const {
 Model 
 } = require('sequelize');
 
-
 module.exports = (sequelize, DataTypes) => {
   class Users extends Model {
     static associate(models) {
@@ -15,6 +14,12 @@ module.exports = (sequelize, DataTypes) => {
 
   Users.init(
     {
+      id:{
+        allowNull: false,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
       name: {
         type: DataTypes.STRING(30),
         unique: true,

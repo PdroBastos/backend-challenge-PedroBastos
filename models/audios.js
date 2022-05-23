@@ -3,9 +3,8 @@
 const {
   Model
 } = require('sequelize');
-
 const users = require('./users');
-const posts = require('./posts')
+const posts = require('./posts');
 
 module.exports = (sequelize, DataTypes) => {
   class Audios extends Model {
@@ -16,6 +15,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   Audios.init(
     {
+      id:{
+        allowNull: false,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
       URL: {
         type: DataTypes.STRING(150),
         allowNull: false,

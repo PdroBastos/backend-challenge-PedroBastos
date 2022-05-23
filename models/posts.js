@@ -4,7 +4,6 @@ const {
   Model 
 } = require('sequelize');
 
-
 module.exports = (sequelize, DataTypes) => {
   class Posts extends Model {
 
@@ -15,6 +14,12 @@ module.exports = (sequelize, DataTypes) => {
   };
   Posts.init(
     {
+      id:{
+        allowNull: false,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
       title: {
         type: DataTypes.STRING(30),
         allowNull: false,
@@ -28,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       userId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
       },
     },
     {

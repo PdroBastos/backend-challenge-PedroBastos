@@ -1,6 +1,9 @@
+const { response } = require('express');
 const express = require('express');
 const app = express();
 const db = require('./db');
+const {v4 : uuidv4} = require('uuid');
+
 
 
 const { Users } = require('./models');
@@ -35,7 +38,7 @@ app.post('/user/', async (req, res) => {
 
 app.get('/users/', async (req, res) => {
   try {
-    const usersName = req.body
+
     const users = await Users.findAll({
       where: {
         isadmin: true
@@ -113,12 +116,14 @@ app.put('/user/:id/', async (req, res) => {
       res.status(204).send('Alteração não foi feita');
     }
   });
+  
 
   app.get('text/:id/' , async (req, res) => {
     try {
+      const id = req.params.id;
 
 
-      res.send();
+      res.send(text);
     
     } catch (error) {
       console.log('error', error);
@@ -129,6 +134,9 @@ app.put('/user/:id/', async (req, res) => {
 
 app.get('/user/:id/texts', async (req, res) => {
 try {
+
+
+
  
   res.send(user);
 
@@ -142,7 +150,7 @@ try {
 app.delete('/text/:id/', async (req, res) => {
   try{
 
-    const deleteText = posts.deleteOne({id: req.params.id });
+    const deleteText = Posts.deleteOne({id: req.params.id });
 
     res.status(204).send(deleteText);
 
@@ -151,6 +159,9 @@ app.delete('/text/:id/', async (req, res) => {
     res.status(500).send('Não deletado');
   }
 });
+
+
+// Audios Functions
 
 
 app.post('/text/:id/audio', async (req, res) => {
