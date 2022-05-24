@@ -1,8 +1,10 @@
 'use strict';
-
+const {v4 : uuidv4} = require('uuid');
+const { user } = require('pg/lib/defaults');
 const { 
-Model 
+Model, UUIDV1, UUIDV4 
 } = require('sequelize');
+const { uuid } = require('uuidv4');
 
 module.exports = (sequelize, DataTypes) => {
   class Users extends Model {
@@ -16,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       id:{
         allowNull: false,
-        type: DataTypes.UUID,
+        type: DataTypes.UUIDV4,
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },

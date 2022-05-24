@@ -5,8 +5,8 @@ module.exports = {
     return queryInterface.createTable("Audios", {
       id: {
         allowNull: false,
-        type: Sequelize.DataTypes.UUID,
-        defaultValue: Sequelize.DataTypes.UUIDV4,
+        type: Sequelize.UUID,
+        defaultValue:  Sequelize.UUIDV4,
         primaryKey: true
       },
       URL: {
@@ -15,7 +15,7 @@ module.exports = {
         // URL:
       },
       userId: {
-        type: Sequelize.UUID,
+        type: Sequelize.STRING,
         allowNull: false,
         references: {         // User hasMany Posts n:n
           model: 'Users',
