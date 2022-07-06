@@ -1,20 +1,14 @@
-'use strict';
+"use strict";
 
-const { 
-  Model 
-} = require('sequelize');
+const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class Posts extends Model {
-
-    static associate(models) {
-     
-      // Posts.belongsTo(models.Users);
-    };
-  };
+    static associate(models) {}
+  }
   Posts.init(
     {
-      id:{
+      id: {
         allowNull: false,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -40,8 +34,6 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: "Posts",
     }
-    
-  
-);
-return Posts;
+  );
+  return Posts;
 };

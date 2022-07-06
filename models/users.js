@@ -1,22 +1,17 @@
-'use strict';
-const {v4 : uuidv4} = require('uuid');
-const { user } = require('pg/lib/defaults');
-const { 
-Model, UUIDV1, UUIDV4 
-} = require('sequelize');
-const { uuid } = require('uuidv4');
+"use strict";
+const { v4: uuidv4 } = require("uuid");
+const { user } = require("pg/lib/defaults");
+const { Model, UUIDV1, UUIDV4 } = require("sequelize");
+const { uuid } = require("uuidv4");
 
 module.exports = (sequelize, DataTypes) => {
   class Users extends Model {
-    static associate(models) {
-      
-      // Users.hasMany(models.Posts);
-    };
-  };
+    static associate(models) {}
+  }
 
   Users.init(
     {
-      id:{
+      id: {
         allowNull: false,
         type: DataTypes.UUIDV4,
         defaultValue: DataTypes.UUIDV4,
@@ -27,27 +22,26 @@ module.exports = (sequelize, DataTypes) => {
         unique: true,
         allowNull: false,
         validate: {
-        notEmpty: true
-        }
+          notEmpty: true,
+        },
       },
       email: {
         type: DataTypes.STRING(50),
         allowNull: false,
         unique: true,
       },
-      
+
       psw: {
         type: DataTypes.STRING(30),
         allowNull: false,
         validate: {
-            notEmpty: true,
-            len: [3, 47]
-          }
+          notEmpty: true,
+          len: [3, 47],
+        },
       },
-      isadmin: {
+      isAdmin: {
         type: DataTypes.BOOLEAN,
       },
-    
     },
     {
       sequelize,

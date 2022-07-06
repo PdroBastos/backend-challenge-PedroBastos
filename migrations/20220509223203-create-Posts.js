@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
 module.exports = {
-  async up (queryInterface, Sequelize) { 
+  async up(queryInterface, Sequelize) {
     return queryInterface.createTable("Posts", {
       id: {
         allowNull: false,
         type: Sequelize.UUID,
-        defaultValue:  Sequelize.UUIDV4,
-        primaryKey: true
+        defaultValue: Sequelize.UUIDV4,
+        primaryKey: true,
       },
       title: {
         type: Sequelize.DataTypes.STRING(30),
@@ -23,19 +23,18 @@ module.exports = {
       },
       userId: {
         type: Sequelize.UUID,
-        references: {         
-          model: 'Users',
-          key: 'id'
-        }
+        references: {
+          model: "Users",
+          key: "id",
+        },
       },
-      
+
       updatedAt: Sequelize.DataTypes.DATE,
       createdAt: Sequelize.DataTypes.DATE,
-    });  
+    });
   },
 
-  async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('Posts');
-  }
-  
-  };
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable("Posts");
+  },
+};

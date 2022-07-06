@@ -1,227 +1,223 @@
 const express = require("express");
 const app = express();
-const Axios = require("axios");
-const fs = require("fs");
-const Path = require("path");
-
-const randomString = require('randomstring');
-
-require("dotenv").config();
-const API_Key = process.env.API_Key;
-
-const jwt = require("jsonwebtoken");
-
 // Models
 const { Users } = require("./models");
 const { Posts } = require("./models");
 const { Audios } = require("./models");
-const { redirect } = require("express/lib/response");
-const { url } = require("inspector");
-// const { path } = require("express/lib/application");
+
+const session = require("express-session");
+const passport = require("passport");
+const cloudinary = require("cloudinary").v2;
+
+require("dotenv").config();
+require("./config/auth")(passport);
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+});
+
+// Auth
+app.use(
+  session({
+    secret: "PassportLogin",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 2 * 60 * 1000 },
+  })
+);
 
 app.use(express.json());
 
-// Auth
-app.post("/auth", async (req, res) => {
-  try {
-    //body
-    const email = req.body.email;
-    const psw = req.body.psw;
-    const userAuth = await Users.findOne({
-      where: {
-        email,
-        psw,
-      },
-    });
+app.use(passport.initialize());
+app.use(passport.session());
 
-    if (userAuth) {
-      const token = await jwt.sign({ email }, "123");
-      res.status(200).send(token);
-      return;
+const login = function (req, res, next) {
+  res.locals.Users = req.Users || null;
+  console.log("LOGGED");
+  next();
+};
+
+app.use(login);
+
+function userAuthentication(req, res, next) {
+  if (req.isAuthenticated()) {
+    if (req.user.id == req.params.id) {
+      return next();
     } else {
-      throw new Error("Negado");
+      return res
+        .status(401)
+        .json({ msg: "You need to login with username and password" });
     }
-  } catch (err) {
-    console.log("error", err);
+  } else {
+    return res.json({ msg: "Access denied! The user must be logged in" });
   }
+}
+
+function adminAuthentication(req, res, next) {
+  if (req.isAuthenticated()) {
+    if (req.user.isAdmin) {
+      return next();
+    } else {
+      return res.status(403).json({
+        msg: "Access denied! You need to be an administrator to access",
+      });
+    }
+  } else {
+    return res.json({ msg: "The user must be logged in" });
+  }
+}
+
+app.get("/success", async (req, res) => {
+  res.status(200).send("User logged in successfully");
+});
+
+app.get("/failure", async (req, res) => {
+  res.status(403).send("invalid credentials");
+});
+
+app.post("/auth", async (req, res, next) => {
+  passport.authenticate("local", {
+    successRedirect: "/success",
+    failureRedirect: "/failure",
+  })(req, res, next);
 });
 
 // User functions //
-app.post("/user/", async (req, res) => {
+app.post("/user", async (req, res) => {
   try {
     // Body
-    const name = req.body.name;
-    const email = req.body.email;
-    const psw = req.body.psw;
-    const isadmin = req.body.isadmin;
-
+    const userDataBody = req.body;
     const userCreate = await Users.create({
-      name,
-      email,
-      psw,
-      isadmin,
+      name: userDataBody.name,
+      email: userDataBody.email,
+      psw: userDataBody.psw,
+      isAdmin: userDataBody.isAdmin,
     });
 
     res.status(201).send(userCreate);
   } catch (error) {
-    console.log("error", error);
-    res.status(500).send("deu merda");
+    res.status(500).send("Not created" + error);
   }
 });
 
-app.get("/users/", async (req, res) => {
+app.get("/users", adminAuthentication, async (req, res) => {
   try {
-    const token = req.headers.authorization;
-    const decrypt = await jwt.verify(token, "123");
-    const userAuth = await Users.findOne({
-      where: { email: decrypt.email, isadmin: true },
-    });
+    const user = await Users.findAll();
 
-    if (userAuth) {
-      const users = await Users.findAll();
-      res.send(users);
-    } else {
-      res.status(403).send();
-    }
+    res.status(200).send(user);
   } catch (error) {
-    console.log("error", error);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("Not found" + error);
   }
 });
 
-app.put("/user/", async (req, res) => {
+app.put("/user/:id", userAuthentication, async (req, res) => {
   try {
-    const token = req.headers.authorization;
-    const decrypt = await jwt.verify(token, "123");
-    const userAuth = await Users.findOne({
-      where: { email: decrypt.email },
-    });
-    if (userAuth) {
-      const id = userAuth.id;
-      const name = req.body.name;
-      const email = req.body.email;
-      const psw = req.body.psw;
+    const id = req.params.id;
+    const userDataBody = req.body;
+    const user = await Users.findByPk(id);
 
-      const userUpdate = await Users.update(
-        { name, email, psw },
-        { where: { id } }
-      );
-      res.send(userUpdate);
+    if (!user) {
+      return res.status(400).send("User not found");
     } else {
-      res.status(204).send("Change was not made");
+      user.name = userDataBody.name;
+      user.email = userDataBody.email;
+      user.psw = userDataBody.psw;
+
+      await user.save();
     }
+    res.status(200).send(user);
   } catch (error) {
-    console.log("error", error);
-    res.status(204).send("change was not made");
+    res.status(500).send("Not found " + error);
   }
 });
 
 // Text functions //
-app.post("/text/", async (req, res) => {
+app.post("/text", async (req, res) => {
   try {
-    const token = req.headers.authorization;
-    const decrypt = await jwt.verify(token, "123");
-    const userAuth = await Users.findOne({
-      where: { email: decrypt.email },
+    const textDataBody = req.body;
+    const post = await Posts.create({
+      title: textDataBody.title,
+      subtitle: textDataBody.subtitle,
+      text: textDataBody.text,
+      userId: textDataBody.userId,
     });
-    if (userAuth) {
-      const userId = userAuth.id;
-      const title = req.body.title;
-      const subtitle = req.body.subtitle;
-      const textBody = req.body.textBody;
-
-      const text = await Posts.create({
-        title,
-        subtitle,
-        text: textBody,
-        userId,
-      });
-      res.send(text);
-    } else {
-      res.status(403).send();
-    }
+    res.status(201).send(post);
   } catch (error) {
-    console.log("error", error);
-    res.status(404).send("Deu Ruim");
+    res.status(500).send("Not found " + error);
   }
 });
 
-app.put("/text/", async (req, res) => {
-  //rever as rotas e autenticações//
+app.put("/text/:id", async (req, res) => {
   try {
-    const token = req.headers.authorization;
-    const decrypt = await jwt.verify(token, "123");
-    const userAuth = await Users.findOne({
-      where: { email: decrypt.email },
-    });
-    if (userAuth) {
-      const userId = userAuth.id;
-      const posts = await Posts.findOne({ where: { userId } });
-      const id = req.body.id;
+    const idText = req.params.id;
+    const textDataBody = req.body;
 
-      const title = req.body.title;
-      const subtitle = req.body.subtitle;
-      const text = req.body.text;
-      const newText = await Posts.update(
-        { title, subtitle, text: text },
-        { where: { id } },
-        { where: { userId } }
-      );
-      res.status(201).send(newText);
-    } else {
-      res.status(403).send();
-    }
+    const posts = await Posts.update(
+      {
+        title: textDataBody.title,
+        subtitle: textDataBody.subtitle,
+        text: textDataBody.text,
+      },
+      {
+        where: {
+          id: idText,
+        },
+      }
+    );
+
+    res.status(200).send(posts);
   } catch (error) {
-    console.log("error", error);
-    res.status(204).send("change was not made");
+    res.status(500).send("Not found" + error);
   }
 });
 
-app.get("/text/:id/", async (req, res) => {
+app.get("/text/:id", async (req, res) => {
   try {
-    // Params
-    const id = req.params.id;
+    const idText = req.params.id;
 
-    const posts = await Posts.findOne({ where: { id } });
+    const post = await Posts.findOne({
+      where: {
+        id: idText,
+      },
+    });
 
-    res.send(posts);
+    res.status(200).send(post);
   } catch (error) {
-    console.log("error", error);
-    res.status(204).send("No Content");
+    res.status(500).send("Not found" + error);
   }
 });
 
-app.get("/user/texts", async (req, res) => {
+app.get("/user/:id/texts", async (req, res) => {
   try {
-    const token = req.headers.authorization;
-    const decrypt = await jwt.verify(token, "123");
-    const userAuth = await Users.findOne({
-      where: { email: decrypt.email },
+    const idText = req.params.id;
+
+    const post = await Posts.findAll({
+      where: {
+        userId: idText,
+      },
     });
-    if (userAuth) {
-      const userId = userAuth.id;
-      const posts = await Posts.findAll({ where: { userId } });
-      res.send(posts);
-    } else {
-      res.status(403).send();
-    }
+
+    res.status(200).send(post);
   } catch (error) {
-    console.log("error", error);
-    res.status(204).send("No Content");
+    res.status(500).send("Not found" + error);
   }
 });
 
-app.delete("/text/:id/", async (req, res) => {
+app.delete("/text/:id", async (req, res) => {
   try {
-    const id = req.params.id;
-    const posts = await Posts.destroy({
-      where: { id },
+    const idText = req.params.id;
+
+    const post = await Posts.destroy({
+      where: {
+        id: idText,
+      },
     });
 
-    res.sendStatus(200);
+    res.status(200).send("Text not deleted");
   } catch (error) {
-    console.log("error", error);
-    res.status(500).send("Não deletado");
+    res.status(500).send("Not found " + error);
   }
 });
 
@@ -229,112 +225,105 @@ app.delete("/text/:id/", async (req, res) => {
 
 app.post("/text/:id/audio", async (req, res) => {
   try {
-    const token = req.headers.authorization;
-    const decrypt = await jwt.verify(token, "123");
-    const userAuth = await Users.findOne({
-      where: { email: decrypt.email },
-    });
-    if (userAuth) {
-      const userId = userAuth.id;
-
-    const postId = req.params.id;
-    const textCreated = await Posts.findOne({
+    const id = req.params.id;
+    const text = await Posts.findOne({
       where: {
-        id: postId,
-      }
+        id: id,
+      },
     });
 
-    if (!textCreated) return res.send("text not found");
-    else {
-      const nameFile = `${randomString.generate(7)}.wma`;
-
-      const response = await Axios.get(
-        `https://api.voicerss.org/?key=${API_Key}&hl=pt-br&c=MP3&src=${textCreated.text}`
-      );
-      console.log(response);
-
-      async function download() {
-        const url = `https://api.voicerss.org/?key=${API_Key}&hl=pt-br&c=MP3&src=${textCreated.text}`;
-        const path = Path.resolve(__dirname, "files", nameFile);
-
-        const response = await Axios({
-          method: "GET",
-          url: url,
-          responseType: "stream",
-        });
-
-        response.data.pipe(fs.createWriteStream(path));
-
-        return new Promise((resolve, reject) => {
-          response.data.on("end", () => {
-            res.status(200).send('OK');
-            resolve();
-          });
-
-          response.data.on("error", (err) => {
-            res.status(500);
-            reject(err);
-          });
-        });
-      }
-
-      await download();
-
-      const audioList = await Audios.create({
-        nameFile,
-        userId,
-        postId
-      });
-
-      // Salvar no seu banco de dados o nome do arquivo
-      // URL => nameFile
-    }
-  }
-} catch (error) {
-  console.log(error)
-  res.status(404).send("Not Found");
-}
-});
-
-app.get("/text/:id/audio", async (req, res) => {
-  try {
-    const postId = req.params.id;
-    const textAudio = await Audios.findOne({
-      where: {
-        id: postId,
-        nameFile,
-      }
-    });
-
-    // FINDONE NA TABELA AUDIO -> WHERE POSTID
-    // Path.resolve(__dirname, "files", audio->nameFile)
-
-    fs.readFile(
-      Path.resolve(__dirname, "files", 'qsRpCvm.wma'),
-      (err, data) => {
-        if (err) {
-          console.error(err);
-        }
-
-        // Set audio
-        res.header('Content-Type', 'audio/mpeg');
-        res.header('Content-Length', data.length);
-        res.send(data);
+    const url = await cloudinary.uploader.upload(
+      `http://api.voicerss.org/?key=${process.env.RSS_KEY}&hl=pt-br&src=${text.text}`,
+      { resource_type: "video" },
+      function (error, result) {
+        console.log(result, error);
       }
     );
+
+    const audios = await Audios.create({
+      url: url.url,
+      postId: id,
+      userId: text.userId,
+    });
+
+    res.status(201).send(audios);
   } catch (error) {
-    res.status(500).send("Deu erro" + error);
+    res.status(500).send("Deu errado " + error);
   }
 });
 
-app.put("/text/:id/audio", async (req, res) => {
+app.get("/text/:id/audio/", async (req, res) => {
   try {
-  } catch {}
+    const postId = req.params.id;
+    let audio;
+
+    if ((audio = await Audios.findOne({ where: { postId: postId } }))) {
+      res.status(200).redirect(audio.url);
+    } else {
+      const text = await Posts.findOne({
+        where: {
+          id: postId,
+        },
+      });
+
+      const url = await cloudinary.uploader.upload(
+        `http://api.voicerss.org/?key=${process.env.RSS_KEY}&hl=pt-br&src=${text.text}`,
+        { resource_type: "video" },
+        function (error, result) {
+          console.log(result, error);
+        }
+      );
+
+      const audioCreate = await Audios.create({
+        url: url.url,
+        postId: postId,
+        userId: text.userId,
+      });
+
+      res.status(201).redirect(audioCreate.url);
+    }
+  } catch (error) {
+    res.status(500).send("Deu errado " + error);
+  }
+});
+
+app.put("/text/:id/audio/", async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const text = await Posts.findOne({
+      where: {
+        id: postId,
+      },
+    });
+
+    const url = await cloudinary.uploader.upload(
+      `http://api.voicerss.org/?key=${process.env.RSS_KEY}&hl=pt-br&src=${text.text}`,
+      { resource_type: "video" },
+      function (error, result) {
+        console.log(result, error);
+      }
+    );
+
+    const audio = await Audios.update(
+      {
+        url: url.url,
+      },
+      {
+        where: {
+          postId: postId,
+        },
+      }
+    );
+
+    res.status(200).send(audio);
+  } catch (error) {
+    res.status(500).send("Deu errado " + error);
+  }
 });
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(2000, () => {
-    console.log("meu servidor esta rodando");
+    console.log("The server is online");
   });
 }
 

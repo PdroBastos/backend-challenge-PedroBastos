@@ -6,9 +6,7 @@ const posts = require("./posts");
 
 module.exports = (sequelize, DataTypes) => {
   class Audios extends Model {
-    static associate(models) {
-      // Users.belongsToMany(models.Posts, { through: Audios });
-    }
+    static associate(models) {}
   }
   Audios.init(
     {
@@ -18,15 +16,15 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
-      nameFile: {
+      url: {
         type: DataTypes.STRING(150),
         allowNull: false,
       },
       userId: {
-        type: DataTypes.UUID
+        type: DataTypes.UUID,
       },
       postId: {
-        type: DataTypes.UUID
+        type: DataTypes.UUID,
       },
     },
     {
