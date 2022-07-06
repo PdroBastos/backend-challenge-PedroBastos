@@ -215,7 +215,7 @@ app.delete("/text/:id", async (req, res) => {
       },
     });
 
-    res.status(200).send("Text not deleted");
+    res.status(200).send("Text deleted");
   } catch (error) {
     res.status(500).send("Not found " + error);
   }
@@ -225,10 +225,10 @@ app.delete("/text/:id", async (req, res) => {
 
 app.post("/text/:id/audio", async (req, res) => {
   try {
-    const id = req.params.id;
+    const idText = req.params.id;
     const text = await Posts.findOne({
       where: {
-        id: id,
+        id: idText,
       },
     });
 
@@ -242,7 +242,7 @@ app.post("/text/:id/audio", async (req, res) => {
 
     const audios = await Audios.create({
       url: url.url,
-      postId: id,
+      postId: idText,
       userId: text.userId,
     });
 

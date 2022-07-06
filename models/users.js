@@ -1,8 +1,6 @@
 "use strict";
-const { v4: uuidv4 } = require("uuid");
-const { user } = require("pg/lib/defaults");
-const { Model, UUIDV1, UUIDV4 } = require("sequelize");
-const { uuid } = require("uuidv4");
+const { Model } = require("sequelize");
+const bcrypt = require("bcryptjs");
 
 module.exports = (sequelize, DataTypes) => {
   class Users extends Model {
@@ -48,5 +46,15 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "Users",
     }
   );
+  Users.addHook("beforeSave", async (crypt) => {
+    return bcrypt
+      .hash(crypt.psw, 8)
+      .then((hash) => {
+        crypt.psw = hash;
+      })
+      .catch((err) => {
+        throw new Error();
+      });
+  });
   return Users;
 };
