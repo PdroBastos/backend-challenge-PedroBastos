@@ -1,0 +1,80 @@
+{
+  
+  "name": "backend-challenge-pedrobastos",
+  
+  "version": "1.0.0",
+  
+  "description": "",
+  
+  "main": "index.js",
+  
+  "author": "Pedro-Bastos",
+  
+  "license": "ISC",
+  
+  "dependencies": {
+  
+    
+  "axios": "^0.27.2",
+  
+    
+  "dotenv": "^16.0.1",
+  
+    
+  "express": "^4.18.0",
+  
+    
+  "jsonwebtoken": "^8.5.1",
+  
+    
+  "pg": "^8.7.3",
+  
+    
+  "pg-hstore": "^2.3.4",
+  
+    
+  "randomstring": "^1.2.2",
+  
+    
+  "sequelize": "^6.19.0",
+  
+    
+  "uuid": "^8.3.2",
+  
+    
+  "uuidv4": "^6.2.13",
+  
+    
+  "voice-rss-client": "^1.3.1"
+  
+  },
+  
+  "devDependencies": {
+  
+    
+  "@faker-js/faker": "^6.3.1",
+  
+    
+  "jest": "^28.1.0",
+  
+    
+  "nodemon": "^2.0.16",
+  
+    
+  "sequelize-cli": "^6.4.1",
+  
+    
+  "supertest": "^6.2.3",
+  
+    
+  "voice-rss": "^3.0.0"
+  
+  },
+  
+  "scripts": {
+  
+    
+  "test": "jest"
+  
+  }
+}
