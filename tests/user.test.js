@@ -39,8 +39,8 @@ describe("Text route tests", () => {
     let randomUser = await Users.create(newUser);
     const newText = {
       title: faker.lorem.words(2),
-      subtitle: faker.lorem.words(4),
-      text: faker.lorem.words(10),
+      subtitle: faker.lorem.words(2),
+      text: faker.lorem.words(5),
       userId: randomUser.id
     };
 
@@ -50,32 +50,32 @@ describe("Text route tests", () => {
     expect(body.title).toBe(newText.title);
   });
 
-  // test("Should update a text successfully", async () => {
-  //   const newUser = {
-  //     name: faker.lorem.words(2),
-  //     email: faker.internet.email(),
-  //     psw: faker.lorem.words(2),
-  //     isAdmin: faker.datatype.boolean()
-  //   };
+  test("Should update a text successfully", async () => {
+    const newUser = {
+      name: faker.lorem.words(2),
+      email: faker.internet.email(),
+      psw: faker.lorem.words(2),
+      isAdmin: faker.datatype.boolean()
+    };
 
-  //   let randomUser = await Users.create(newUser);
-  //   const newText = {
-  //     title: faker.lorem.words(2),
-  //     subtitle: faker.lorem.words(4),
-  //     text: faker.lorem.words(10),
-  //     userId: randomUser.id
-  //   };
+    let randomUser = await Users.create(newUser);
+    const newText = {
+      title: faker.lorem.words(2),
+      subtitle: faker.lorem.words(2),
+      text: faker.lorem.words(5),
+      userId: randomUser.id
+    };
 
-  //   let randomText = await Posts.create(newText);
-  //   const updateText = {
-  //     title: faker.lorem.words(2),
-  //     subtitle: faker.lorem.words(4),
-  //     text: faker.lorem.words(10)
-  //   };
-  //   const { body, statusCode } = await request(app).put(`/text/${randomText.id}`).send(updateText);
-  //   console.log(body);
-  //     expect(`${body}`).toBe('1');
-  // });
+    let randomText = await Posts.create(newText);
+    const updateText = {
+      title: faker.lorem.words(2),
+      subtitle: faker.lorem.words(2),
+      text: faker.lorem.words(5)
+    };
+    const { body, statusCode } = await request(app).put(`/text/${randomText.id}`).send(updateText);
+    console.log(body);
+      expect(`${body}`).toBe('1');
+  });
 
   test("Should get text object successfully", async () => {
     const newUser = {
@@ -88,8 +88,8 @@ describe("Text route tests", () => {
     let randomUser = await Users.create(newUser);
     const newText = {
       title: faker.lorem.words(2),
-      subtitle: faker.lorem.words(4),
-      text: faker.lorem.words(10),
+      subtitle: faker.lorem.words(2),
+      text: faker.lorem.words(5),
       userId: randomUser.id
     };
 
@@ -129,8 +129,8 @@ describe("Text route tests", () => {
 
     const newText = {
       title: faker.lorem.words(2),
-      subtitle: faker.lorem.words(4),
-      text: faker.lorem.words(10),
+      subtitle: faker.lorem.words(2),
+      text: faker.lorem.words(5),
       userId: randomUser.id
     };
     let randomText = await Posts.create(newText);
@@ -152,8 +152,8 @@ describe("Audio route tests", () => {
 
     const newText = {
       title: faker.lorem.words(2),
-      subtitle: faker.lorem.words(4),
-      text: faker.lorem.words(10),
+      subtitle: faker.lorem.words(2),
+      text: faker.lorem.words(5),
       userId: randomUser.id
     };
     let randomText = await Posts.create(newText);
@@ -174,8 +174,8 @@ describe("Audio route tests", () => {
 
     const newText = {
       title: faker.lorem.words(2),
-      subtitle: faker.lorem.words(4),
-      text: faker.lorem.words(10),
+      subtitle: faker.lorem.words(2),
+      text: faker.lorem.words(5),
       userId: randomUser.id
     };
     let randomText = await Posts.create(newText);
@@ -198,8 +198,8 @@ describe("Audio route tests", () => {
 
     const newText = {
       title: faker.lorem.words(2),
-      subtitle: faker.lorem.words(4),
-      text: faker.lorem.words(10),
+      subtitle: faker.lorem.words(2),
+      text: faker.lorem.words(5),
       userId: randomUser.id
     };
     let randomText = await Posts.create(newText);
